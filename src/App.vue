@@ -151,11 +151,34 @@
   </h2>
   <h2>Computed Total - {{ total }}</h2>
   <h2>Method Total - {{ getTotal() }}</h2>
-  <button @click="items.push({ id: 4, title: 'Keyboard', price: 50 })">
+  <button @click="items.push({ id: 4, title:'Keyboard', price: 50 })">
     Add item
   </button>
-
-
+  
+  <!-- Computed Properties and v-for -->
+  <template v-for="item in items" :key="item.id">
+    <h2 v-if="item.price > 100">{{item.title}} {{item.price}}</h2>
+  </template>
+  <h2 v-for="item in expensiveItems" :key="item.id">{{item.title}} {{item.price}}</h2>
+ 
+  <!-- Watchers -->
+  <h2>Volume Tracker (0-20)</h2>
+  <h3>Current Volume - {{ volume }}</h3>
+  <div>
+    <button @click="volume += 2">Increase</button>
+    <button @click="volume -= 2">Decrease</button>
+  </div>
+  <input type="text" v-model="movie" />
+  <input type="text" v-model="movieInfo.title" />
+  <input type="text" v-model="movieInfo.actor" />
+  <button @click="movieList.push('Wonder Woman')">
+    Add movie
+  </button>
+  <!-- <button @click="movieList = movieList.concat(['Wonder Woman'])">
+    Add movie
+  </button>   ///  deep:true isn't required if return new referance-->
+  
+  
 </template>
 
 <script>
@@ -180,6 +203,13 @@ export default {
       name: 'Michael',
       firstName: 'Kai',
       lastName: 'Muller', 
+      volume: 0,
+      movie: 'batman',
+      movieInfo: {
+        title: '',
+        actor: '',
+      },
+      movieList: ['Batman', 'Superman'],
       formValues:{
         name: '',
         summary: '',
@@ -288,7 +318,35 @@ export default {
       console.log('total computed property')
       return this.items.reduce((total, curr) => (total = total + curr.price), 0)
       },
-    } 
+      expensiveItems(){
+        return this.items.filter(item => item.price > 100)
+      }
+    },
+  watch:{
+    volume(newvolume, oldvolume){
+      if(newvolume > oldvolume && newvolume == 8) {
+        alert('high volume')
+      }
+    },
+    movie: {
+      handler(newValue) {
+        console.log(`Calling API with movie name = ${newValue}`)
+      },
+      immediate: true,
+    },
+    movieInfo: {
+      handler(newValue) {
+        console.log(`Calling API with movie title = ${newValue.title} and actor = ${newValue.actor}`)
+      },
+      deep: true,
+    },
+    movieList: {
+      handler(newValue) {
+        console.log(`Updated list ${newValue}`)
+      },
+      deep: true,
+    },
+  }
 };
 </script>
 
